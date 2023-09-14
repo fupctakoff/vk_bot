@@ -3,30 +3,65 @@ from users_data import USERS_DICT
 
 
 class Service:
-    @classmethod
-    def input(cls, user_id, message):
-        """Функция обработки входящего сообщения message"""
-        # БЛОК ПОГОДЫ
-        if message == Matcher.weather + ' сегодня':
-            return USERS_DICT[user_id].weather.get_weather('today')
-        elif message == Matcher.weather + ' завтра':
-            return USERS_DICT[user_id].weather.get_weather('tomorrow')
+    mark = None
 
-        # БЛОК ПРОБОК
-        elif message == Matcher.traffic_jam:
-            return USERS_DICT[user_id].traffic_jam.get_traffic_jam()
+    def set_default_mark(self):
+        self.mark = None
 
-        # БЛОК АФИШЫ
-        elif message == Matcher.poster + ' сегодня':
-            return USERS_DICT[user_id].poster.get_poster('today')
-        elif message == Matcher.poster + ' завтра':
-            return USERS_DICT[user_id].poster.get_poster('tomorrow')
+    def input(self, user_id, message) -> str:
+        """Обработка входящего сообщения message"""
+        match message:
 
-        # БЛОК ВАЛЮТЫ
-        elif message == Matcher.currency:
-            return USERS_DICT[user_id].currency.get_currency()
+            # БЛОК ПРОБОК
+            case Matcher.traffic_jam:
+                return USERS_DICT[user_id].traffic_jam.get_traffic_jam()
 
-        elif message == "сменить город":
-            return input('сюда')
-        else:
-            return "Пока нет такого функционала"
+            # БЛОК ВАЛЮТЫ
+            case Matcher.currency:
+                return USERS_DICT[user_id].currency.get_currency()
+
+            # БЛОК СЕГОДНЯ ДЛЯ ПОГОДЫ И АФИШЫ
+            case 'сегодня':
+                if self.mark == Matcher.weather:
+                    self.set_default_mark()
+                    return USERS_DICT[user_id].weather.get_weather('today')
+                if self.mark == Matcher.poster:
+                    self.set_default_mark()
+                    return USERS_DICT[user_id].poster.get_poster('today')
+                return 'Сначала выберите, что вы хотите узнать про сегодня: состояние погоды или афишу'
+
+            # БЛОК ЗАВТРА ДЛЯ ПОГОДЫ И АФИШЫ
+            case 'завтра':
+                if self.mark == Matcher.weather:
+                    self.set_default_mark()
+                    return USERS_DICT[user_id].weather.get_weather('tomorrow')
+                if self.mark == Matcher.poster:
+                    self.set_default_mark()
+                    return USERS_DICT[user_id].poster.get_poster('tomorrow')
+                return 'Сначала выберите, что вы хотите узнать про завтра: состояние погоды или афишу'
+
+            # БЛОК НАЖАТИЕ НА КНОПКУ ПОГОДА ИЛИ АФИША
+            case Matcher.weather | Matcher.poster:
+                return 'В какой день?'
+
+            # БЛОК НАЗАД
+            case 'назад':
+                return 'Возвращаемся'
+
+            # БЛОК СМЕНИТЬ ГОРОД
+            case 'сменить город':
+                return 'Введите название вашего города в следующем сообщении'
+
+            # БЛОК СТАРТА
+            case 'Начать':
+                return 'Вас приветствует бот Боб. \n Он может показывать афишу, валюту, балл пробки.\n\n \
+                Если в вашем профиле нет города, вся информация в данном боте будет отображаться для г.Москва.\n \
+                            Вы можете указать/поменять город в профиле, или воспользоваться кнопкой "Сменить город"'
+
+            # БЛОК ВСЕ ОСТАЛЬНОЕ
+            case _:
+                if self.mark == 'сменить город':
+                    self.set_default_mark()
+                    USERS_DICT[user_id].change_city(new_city=message)
+                    return 'Город успешно изменен'
+                return "Пока нет такого функционала"

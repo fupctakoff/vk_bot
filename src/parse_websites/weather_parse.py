@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
+# постоянная переменная для запроса в requests
 HEADER = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'}
 
@@ -11,7 +12,7 @@ class Weather:
         self.url = f'https://sinoptik.ua/погода-{self.city}'
 
     def get_bs4_from_html(self) -> bool:
-        """Функция парсинга сайта"""
+        """Парсинг сайта, создание экземпляра класса soup для вывода взятой информации"""
         response = requests.get(url=self.url, headers=HEADER).text
         self.soup = BeautifulSoup(response, 'html.parser')
         return True

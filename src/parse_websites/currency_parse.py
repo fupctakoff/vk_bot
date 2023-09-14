@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
+# постоянная переменная для запроса в requests
 HEADER = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'}
 
@@ -10,12 +11,13 @@ class Currency():
         self.url = 'https://www.banki.ru/products/currency/cb/'
 
     def get_bs4_from_html(self) -> bool:
-        """Функция парсинга сайта"""
+        """Парсинг сайта, создание экземпляра класса soup для вывода взятой информации"""
         response = requests.get(url=self.url, headers=HEADER).text
         self.soup = BeautifulSoup(response, 'html.parser')
         return True
 
-    def get_currency(self):
+    def get_currency(self) -> str:
+        """Выводит конечную информацию о курсе валют на сегодня"""
         self.get_bs4_from_html()
         data = self.__parsed_currency_data()
 
@@ -25,8 +27,8 @@ class Currency():
                f"1GBP = {data['gbp']}РУБ \n" \
                f"1AUD = {data['aud']}РУБ \n"
 
-
-    def __parsed_currency_data(self):
+    def __parsed_currency_data(self) -> dict:
+        """Парсит всю информацию с помощью ранее созданного soup объекта"""
         data = {}
         data['usd'] = self.soup.find('tr', {'data-currency-code': 'USD'}).find_all('td')[-2].text
         data['eur'] = self.soup.find('tr', {'data-currency-code': 'EUR'}).find_all('td')[-2].text
@@ -34,10 +36,3 @@ class Currency():
         data['gbp'] = self.soup.find('tr', {'data-currency-code': 'GBP'}).find_all('td')[-2].text
         data['aud'] = self.soup.find('tr', {'data-currency-code': 'AUD'}).find_all('td')[-2].text
         return data
-
-# url = 'https://www.banki.ru/products/currency/cb/'
-# response = requests.get(url=url, headers=HEADER).text
-# soup = BeautifulSoup(response, 'html.parser')
-#
-# usd = soup.find('tr', {'data-currency-code': 'USD'}).find_all('td')[-2].text
-# print(usd.__ne__)
