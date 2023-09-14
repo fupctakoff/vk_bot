@@ -54,11 +54,7 @@ class Bot():
                     response = USERS_DICT[id].service.input(user_id=id, message=msg)
                     USERS_DICT[id].service.mark = msg
                     self.send_message(user_id=id, message=response, keyboard=support_keyboard)
-                # Устанавливается маркер для получения названия города сервисом
-                elif msg == 'сменить город':
-                    response = USERS_DICT[id].service.input(user_id=id, message=msg)
-                    USERS_DICT[id].service.mark = msg
-                    self.send_message(user_id=id, message=response)
+                # Обработка всех остальных сообщений
                 else:
                     response = USERS_DICT[id].service.input(user_id=id, message=msg)
                     self.send_message(user_id=id, message=response)
