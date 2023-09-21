@@ -2,7 +2,7 @@ from parse_websites.weather_parse import Weather
 from parse_websites.traffic_jam_parse import TrafficJam
 from parse_websites.poster_parse import Poster
 from parse_websites.currency_parse import Currency
-from src.service import Service
+from service import Service
 from transliteration.script_transliteration import script_to_translit
 from transliteration.transliteration_data import DATA_FOR_POSTER, DATA_FOR_TRAFFIC_JAM
 
